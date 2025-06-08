@@ -14,7 +14,25 @@
     <script>
         async function zip_api(myForm) {
             const endpoint = "https://zipcloud.ibsnet.co.jp/api/search";
-            // ここにコードを書く
+                        var zip = myForm.zipcode.value.replace("-", "");
+            if (zip.length === 7) {
+                var url = endpoint + "?zipcode=" + zip;
+                try {
+                    var response = await fetch(url);
+                    var data = await response.json();
+                    if (data.status === 200 && data.results !== null) {
+                        var result = data.results[0];
+                        var address = result.address1 + result.address2 + result.address3;
+                        document.getElementById("result").innerHTML = address;
+                    } else {
+                        document.getElementById("result").innerHTML = "住所が取得できませんでした。";
+                    }
+                } catch (e) {
+                    document.getElementById("result").innerHTML = "APIの呼び出しに失敗しました。";
+                }
+            } else {
+                document.getElementById("result").innerHTML = "7桁の郵便番号を入力してください。";
+            }
             // zipcloudのAPI呼び出して結果を表示する
             document.getElementById("result").innerHTML =  myForm.zipcode.value; // 現状ではそのまま表示しているだけ
         }
