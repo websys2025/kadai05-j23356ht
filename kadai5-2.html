@@ -13,8 +13,30 @@
     <div id="result"></div>
     <script>
         async function some_api(myForm) {
-            // ここにコードを書く
-            document.getElementById("result").innerHTML += myForm.form_data.value+"<br />";
+            var city = myForm.form_data.value.trim();
+            var resultDiv = document.getElementById("result");
+
+            if (!city) {
+                resultDiv.innerText = "都市名を入力してください。";
+                return;
+            }
+
+            var url = "https://wttr.in/" + encodeURIComponent(city) + "?format=j1";
+
+            try {
+                var response = await fetch(url);
+                var data = await response.json();
+                var current = data.current_condition[0];
+
+                resultDiv.innerHTML = 
+                    "<strong>都市名：</strong> " + city + "<br>" +
+                    "<strong>天気：</strong> " + current.weatherDesc[0].value + "<br>" +
+                    "<strong>気温：</strong> " + current.temp_C + " ℃<br>" +
+                    "<strong>湿度：</strong> " + current.humidity + " %";
+            } catch (error) {
+                resultDiv.innerHTML = "<span style='color: red;'>データ取得に失敗しました。</span>";
+            }
+            
             document.apiform.reset();
         }
     </script>
